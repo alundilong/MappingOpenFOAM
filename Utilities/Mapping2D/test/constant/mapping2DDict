@@ -29,5 +29,6 @@ Grids
     dz             dy [0 1 0 0 0 0 0] 100.0;
 }
 
+datasetDir  "/home/maoy/data/PorousMedia/meltingFoam/DL_workspace/data/debug_runs";
 
 // ************************************************************************* //
