@@ -1,0 +1,33 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      Mapping2DDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+Grids
+{
+    scale          scale [0 0 0 0 0 0 0] 1e-03;
+    xLow           xLow [0 1 0 0 0 0 0] -0.5;
+    xHig           xHig [0 1 0 0 0 0 0] 99.5;
+    yLow           yLow [0 1 0 0 0 0 0] -0.5;
+    yHig           yHig [0 1 0 0 0 0 0] 99.5;
+    zLow           yLow [0 1 0 0 0 0 0] -0.5;
+    zHig           yHig [0 1 0 0 0 0 0] 99.5;
+    dx             dx [0 1 0 0 0 0 0] 2.0;
+    dy             dy [0 1 0 0 0 0 0] 2.0;
+    dz             dy [0 1 0 0 0 0 0] 100.0;
+}
+
+
+// ************************************************************************* //
