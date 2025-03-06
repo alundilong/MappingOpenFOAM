@@ -1,3 +1,4 @@
 Mapping2D.C
+CaseProcessor.C
 
 EXE = $(FOAM_USER_APPBIN)/Mapping2DFoam

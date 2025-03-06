@@ -81,4 +81,19 @@ for (int j = 0; j < Ny; j++)
         pClouds[pointI] = point(x,y,zMiddle);
     }
 }
-Info << pClouds << endl;
+
+fileName rootPath(mapping2DDict.lookup("datasetDir"));
+
+fileNameList caseNames(Foam::readDir(rootPath, fileName::Type::DIRECTORY));
+
+label nrow = pClouds.size();
+label ncol = 9;
+
+forAll(caseNames, i)
+{
+    fileName casePath = rootPath + '/' + caseNames[i];
+    Info << casePath << endl;
+    CaseProcessor worker(rootPath, caseNames[i], nrow, ncol);
+}
+/*
+*/
