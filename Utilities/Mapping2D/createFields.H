@@ -87,13 +87,21 @@ fileName rootPath(mapping2DDict.lookup("datasetDir"));
 fileNameList caseNames(Foam::readDir(rootPath, fileName::Type::DIRECTORY));
 
 label nrow = pClouds.size();
-label ncol = 9;
+// x: C(2), U(2), p_rgh(1), T(1), alpha(1), mask(1)
+// y: U(2), p_rgh(1), T(1), alpha(1)
+label ncolx = 8;
+label ncoly = 5;
+
+wordList fieldNamesx;
+wordList fieldNamesy;
 
 forAll(caseNames, i)
 {
     fileName casePath = rootPath + '/' + caseNames[i];
     Info << casePath << endl;
-    CaseProcessor worker(rootPath, caseNames[i], nrow, ncol);
+    CaseProcessor worker(rootPath, caseNames[i], nrow, ncolx, ncoly);
+    worker.run(pClouds, fieldNamesx, fieldNamesy);
+    break;
 }
 /*
 */

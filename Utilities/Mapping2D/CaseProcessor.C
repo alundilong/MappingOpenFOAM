@@ -3,9 +3,16 @@
 #include <sstream>
 #include <string>
 #include "fvCFD.H"
+#include "IOobjectList.H"
+#include "ReadFields.H"
 
 // Constructor
-CaseProcessor::CaseProcessor(const Foam::fileName& rootPath, const Foam::fileName & caseName, Foam::label nrow, Foam::label ncol) :
+CaseProcessor::CaseProcessor(
+        const Foam::fileName& rootPath, 
+        const Foam::fileName & caseName, 
+        Foam::label nrow, 
+        Foam::label ncolx,
+        Foam::label ncoly) :
     runTime(Foam::Time::controlDictName, rootPath, caseName),
     mesh 
     (
@@ -17,11 +24,46 @@ CaseProcessor::CaseProcessor(const Foam::fileName& rootPath, const Foam::fileNam
             Foam::IOobject::MUST_READ
         )
     ),
-    data(nrow, ncol)
+    datax(nrow, ncolx),
+    datay(nrow, ncoly),
+    casePath(rootPath + '/' + caseName)
 {
 }
 
-const Foam::scalarRectangularMatrix& CaseProcessor::run(const Foam::pointField & pointCloud, const Foam::wordList & fieldNames)
+void CaseProcessor::run(
+        const Foam::pointField & pointCloud, 
+        const Foam::wordList & fieldNamesx,
+        const Foam::wordList & fieldNamesy)
 {
-    return data;
+    //- looping over all timeDir
+    const Foam::instantList &timeDirs = Foam::Time::findTimes(casePath);
+
+    Foam::IOobjectList objects(mesh, runTime.timeName());
+    Info << objects.size() << endl;
+    Info << volScalarField::typeName << endl;
+    Foam::IOobjectList fields = objects.lookupClass(volScalarField::typeName);
+    Info << fields.size() << endl;
+
+    wordList selectedTimes(timeDirs.size()-1);
+
+    forAll(timeDirs, timei)
+    {
+        if (timei == 0) continue;
+        selectedTimes[timei-1] = timeDirs[timei].name();
+    }
+
+    word registryName = "myCache";
+    ReadFields<volScalarField>("T",mesh,selectedTimes,registryName);
+    const objectRegistry & objectR = mesh.lookupObject<objectRegistry>(registryName);
+    Info << objectR.names() << nl;
+    const volScalarField &T = objectR.lookupObject<volScalarField>("T");
+
+    forAll(timeDirs, timei)
+    {
+        if (timei == 0) continue;
+        runTime.setTime(timeDirs[timei], timei);
+        Info<< "Time = " << runTime.timeName() << endl;
+        ReadFields<volScalarField>("T",mesh,selectedTimes,registryName);
+    }
+
 }
