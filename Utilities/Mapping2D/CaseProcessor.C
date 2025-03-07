@@ -32,38 +32,36 @@ CaseProcessor::CaseProcessor(
 
 void CaseProcessor::run(
         const Foam::pointField & pointCloud, 
-        const Foam::wordList & fieldNamesx,
-        const Foam::wordList & fieldNamesy)
+        const Foam::HashSet<Foam::word> & fieldNames)
 {
     //- looping over all timeDir
     const Foam::instantList &timeDirs = Foam::Time::findTimes(casePath);
-
-    Foam::IOobjectList objects(mesh, runTime.timeName());
-    Info << objects.size() << endl;
-    Info << volScalarField::typeName << endl;
-    Foam::IOobjectList fields = objects.lookupClass(volScalarField::typeName);
-    Info << fields.size() << endl;
-
-    wordList selectedTimes(timeDirs.size()-1);
-
-    forAll(timeDirs, timei)
-    {
-        if (timei == 0) continue;
-        selectedTimes[timei-1] = timeDirs[timei].name();
-    }
-
-    word registryName = "myCache";
-    ReadFields<volScalarField>("T",mesh,selectedTimes,registryName);
-    const objectRegistry & objectR = mesh.lookupObject<objectRegistry>(registryName);
-    Info << objectR.names() << nl;
-    const volScalarField &T = objectR.lookupObject<volScalarField>("T");
 
     forAll(timeDirs, timei)
     {
         if (timei == 0) continue;
         runTime.setTime(timeDirs[timei], timei);
         Info<< "Time = " << runTime.timeName() << endl;
-        ReadFields<volScalarField>("T",mesh,selectedTimes,registryName);
+
+        Foam::IOobjectList objects(mesh, runTime.timeName());
+
+        //IOobjectList fields(objects.lookupClass(volScalarField::typeName));
+
+        //forAllConstIter(IOobjectList, fields, fieldIter)
+        //{
+        //    const IOobject& io = *fieldIter();
+        //    Info << io.name() << tab << io.instance() << endl;
+        //}
+
+        LIFOStack<regIOobject*> storedObjects;
+        readFields<volScalarField>(mesh, objects, fieldNames, storedObjects);
+
+        const volScalarField &T = mesh.lookupObject<volScalarField>("T");
+        Info << T.mesh().time().value() << tab << average(T).value() << nl;
+        // readFields<volVectorField>(mesh, objects, fieldNames, storedObjects);
+        // const volVectorField &U = mesh.lookupObject<volVectorField>("U");
+        // volScalarField magU = mag(U);
+        // Info << magU << endl;
     }
 
 }

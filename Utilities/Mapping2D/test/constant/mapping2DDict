@@ -31,4 +31,6 @@ Grids
 
 datasetDir  "/home/maoy/data/PorousMedia/meltingFoam/DL_workspace/data/debug_runs";
 
+fieldNames (T U p_rgh alpha mask);
+
 // ************************************************************************* //

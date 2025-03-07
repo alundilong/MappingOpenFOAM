@@ -92,15 +92,14 @@ label nrow = pClouds.size();
 label ncolx = 8;
 label ncoly = 5;
 
-wordList fieldNamesx;
-wordList fieldNamesy;
+HashSet<Foam::word> fieldNames(mapping2DDict.lookup("fieldNames"));
 
 forAll(caseNames, i)
 {
     fileName casePath = rootPath + '/' + caseNames[i];
     Info << casePath << endl;
     CaseProcessor worker(rootPath, caseNames[i], nrow, ncolx, ncoly);
-    worker.run(pClouds, fieldNamesx, fieldNamesy);
+    worker.run(pClouds, fieldNames);
     break;
 }
 /*

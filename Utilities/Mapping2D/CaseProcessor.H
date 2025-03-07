@@ -7,6 +7,8 @@
 #include "Time.H"
 #include "fvMesh.H"
 #include "fileName.H"
+#include "HashSet.H"
+#include "word.H"
 
 namespace Foam {
     class argList;  // Forward declaration
@@ -17,23 +19,22 @@ public:
 
     // Constructor
     explicit CaseProcessor(
-            const Foam::fileName &rootPath, 
-            const Foam::fileName &caseName, 
-            Foam::label nrow, 
-            Foam::label ncolx,
-            Foam::label ncoly
+                const Foam::fileName &rootPath, 
+                const Foam::fileName &caseName, 
+                Foam::label nrow, 
+                Foam::label ncolx,
+                Foam::label ncoly
             );
 
     // do the dirty work
     void run(
-            const Foam::pointField & pointCloud, 
-            const Foam::wordList & fieldNamesx,
-            const Foam::wordList & fieldNamesy
+                const Foam::pointField & pointCloud, 
+                const Foam::HashSet<Foam::word> & fieldNames
             );
 
 private:
     Foam::Time runTime;
-    const Foam::fvMesh mesh;
+    Foam::fvMesh mesh;
     Foam::scalarRectangularMatrix datax;
     Foam::scalarRectangularMatrix datay;
     const Foam::fileName casePath;
