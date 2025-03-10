@@ -5,7 +5,6 @@
 #include "fvCFD.H"
 #include "IOobjectList.H"
 #include "ReadFields.H"
-#include <torch/torch.h>
 
 // Constructor
 CaseProcessor::CaseProcessor(
