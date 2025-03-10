@@ -5,6 +5,7 @@
 #include "fvCFD.H"
 #include "IOobjectList.H"
 #include "ReadFields.H"
+#include <torch/torch.h>
 
 // Constructor
 CaseProcessor::CaseProcessor(
@@ -41,26 +42,21 @@ void CaseProcessor::run(
     {
         if (timei == 0) continue;
         runTime.setTime(timeDirs[timei], timei);
-        Info<< "Time = " << runTime.timeName() << endl;
 
         Foam::IOobjectList objects(mesh, runTime.timeName());
 
         LIFOStack<regIOobject*> storedObjects;
         readFields<volScalarField>(mesh, objects, fieldNames, storedObjects);
-        Info <<"stored object size: "<< storedObjects.size() << endl;
-        volScalarField &T = refCast<volScalarField>(*(storedObjects.pop()));
-        Info << average(T).value() << endl;
+        Info<< "Time = " << runTime.timeName() <<" stored object size: "<< storedObjects.size() << endl;
 
         while (!storedObjects.empty())
         {
-            storedObjects.pop()->checkOut();
+            volScalarField &fd = refCast<volScalarField>(*(storedObjects.pop()));
+            Info << fd.name() << tab << average(fd).value() << endl;
         }
 
         readFields<volVectorField>(mesh, objects, fieldNames, storedObjects);
-        //const volVectorField &U = runTime.lookupObject<objectRegistry>("region0").lookupObject<volVectorField>("U");
         volVectorField &U = refCast<volVectorField>(*(storedObjects.pop()));
-        Info <<"stored object size: "<< storedObjects.size() << endl;
-        //const volVectorField &U = mesh.lookupObject<volVectorField>("U");
         volScalarField magU = mag(U);
         Info << average(magU).value() << endl;
     }
