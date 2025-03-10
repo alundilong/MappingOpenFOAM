@@ -45,23 +45,24 @@ void CaseProcessor::run(
 
         Foam::IOobjectList objects(mesh, runTime.timeName());
 
-        //IOobjectList fields(objects.lookupClass(volScalarField::typeName));
-
-        //forAllConstIter(IOobjectList, fields, fieldIter)
-        //{
-        //    const IOobject& io = *fieldIter();
-        //    Info << io.name() << tab << io.instance() << endl;
-        //}
-
         LIFOStack<regIOobject*> storedObjects;
         readFields<volScalarField>(mesh, objects, fieldNames, storedObjects);
+        Info <<"stored object size: "<< storedObjects.size() << endl;
+        volScalarField &T = refCast<volScalarField>(*(storedObjects.pop()));
+        Info << average(T).value() << endl;
 
-        const volScalarField &T = mesh.lookupObject<volScalarField>("T");
-        Info << T.mesh().time().value() << tab << average(T).value() << nl;
-        // readFields<volVectorField>(mesh, objects, fieldNames, storedObjects);
-        // const volVectorField &U = mesh.lookupObject<volVectorField>("U");
-        // volScalarField magU = mag(U);
-        // Info << magU << endl;
+        while (!storedObjects.empty())
+        {
+            storedObjects.pop()->checkOut();
+        }
+
+        readFields<volVectorField>(mesh, objects, fieldNames, storedObjects);
+        //const volVectorField &U = runTime.lookupObject<objectRegistry>("region0").lookupObject<volVectorField>("U");
+        volVectorField &U = refCast<volVectorField>(*(storedObjects.pop()));
+        Info <<"stored object size: "<< storedObjects.size() << endl;
+        //const volVectorField &U = mesh.lookupObject<volVectorField>("U");
+        volScalarField magU = mag(U);
+        Info << average(magU).value() << endl;
     }
 
 }
