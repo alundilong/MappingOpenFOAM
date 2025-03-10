@@ -31,6 +31,7 @@ Description
 
 #include "fvCFD.H"
 #include "CaseProcessor.H"
+#include "word.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

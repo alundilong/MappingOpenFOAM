@@ -31,4 +31,7 @@ Grids
 
 datasetDir  "/home/maoy/data/PorousMedia/meltingFoam/DL_workspace/data/debug_runs";
 
+fieldNamesX (U p_rgh T alpha mask); // spatial and temporal channels will be automatically added
+fieldNamesY (U p_rgh T alpha);
+
 // ************************************************************************* //

@@ -86,14 +86,46 @@ fileName rootPath(mapping2DDict.lookup("datasetDir"));
 
 fileNameList caseNames(Foam::readDir(rootPath, fileName::Type::DIRECTORY));
 
-label nrow = pClouds.size();
-label ncol = 9;
+// x: C(2), U(2), p_rgh(1), T(1), alpha(1), mask(1)
+// y: U(2), p_rgh(1), T(1), alpha(1)
+
+HashSet<Foam::word> fieldNamesX(mapping2DDict.lookup("fieldNamesX"));
+HashSet<Foam::word> fieldNamesY(mapping2DDict.lookup("fieldNamesY"));
+
+OFstream ofileX(rootPath+"/x.dat");
+OFstream ofileY(rootPath+"/y.dat");
 
 forAll(caseNames, i)
 {
     fileName casePath = rootPath + '/' + caseNames[i];
     Info << casePath << endl;
-    CaseProcessor worker(rootPath, caseNames[i], nrow, ncol);
+    CaseProcessor worker(rootPath, caseNames[i]);
+    const XYPairData &data = worker.run(pClouds, fieldNamesX, fieldNamesY);
+    const Foam::scalarRectangularMatrix &datax = data.x();
+    const Foam::scalarRectangularMatrix &datay = data.y();
+    //Info << datax.m() << tab << datax.n()<< nl;
+    //Info << datay.m() << tab << datay.n()<< nl;
+    for(int row = 0; row < datax.m(); row++)
+    {
+        for(int col = 0; col < datax.n(); col++)
+        {
+            if (col < datax.n()-1)
+                ofileX << datax[row][col] <<",";
+            else
+                ofileX << datax[row][col];
+        }
+        ofileX << nl;
+    }
+    for(int row = 0; row < datay.m(); row++)
+    {
+        for(int col = 0; col < datay.n(); col++)
+        {
+            if (col < datay.n()-1)
+                ofileY << datay[row][col] <<",";
+            else
+                ofileY << datay[row][col];
+        }
+        ofileY << nl;
+    }
+    //break;
 }
-/*
-*/
